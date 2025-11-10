@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Competitive Intelligence Dashboard - Technology Sector Stock Analysis</title>
+
+    <!-- Meta tags for sharing and SEO -->
+    <meta name="description" content="Real-time competitive intelligence dashboard tracking stock performance of major technology companies including Apple, Microsoft, Google, Meta, and Amazon.">
+    <meta property="og:title" content="Competitive Intelligence Dashboard">
+    <meta property="og:description" content="Technology Sector Stock Analysis - Real-time tracking of AAPL, MSFT, GOOGL, META, AMZN">
+    <meta property="og:type" content="website">
+
+    <style>
+        /* ===== CSS VARIABLES FOR CONSISTENT THEMING ===== */
+        :root {
+            --primary-bg: #0a0e27;
+            --secondary-bg: #1a1f3a;
+            --accent-bg: #252b48;
+            --text-primary: #ffffff;
+            --text-secondary: #b8c1ec;
+            --border-color: #3d4461;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --accent-blue: #3b82f6;
+            --hover-bg: #2d3351;
+        }
+
+        /* ===== GLOBAL STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        /* ===== CONTAINER & LAYOUT ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== HEADER STYLES ===== */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .header h1 {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* ===== CONTROLS SECTION ===== */
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #2563eb;
+        }
+
+        .btn-secondary {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #059669;
+        }
+
+        /* ===== DATA DISPLAY CARD ===== */
+        .data-card {
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.6s ease-in 0.2s both;
+        }
+
+        /* ===== LOADING STATE ===== */
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== ERROR STATE ===== */
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .error-icon {
+            font-size: 3rem;
+            color: var(--danger-color);
+            margin-bottom: 15px;
+        }
+
+        .error-text {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .error-details {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* ===== TABLE STYLES ===== */
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1rem;
+        }
+
+        thead {
+            background: var(--accent-bg);
+        }
+
+        th {
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: var(--hover-bg);
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        td {
+            padding: 16px;
+            color: var(--text-secondary);
+        }
+
+        .company-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .ticker {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        .price {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* ===== PRICE HIGHLIGHTING ===== */
+        .price-highest {
+            color: var(--success-color);
+        }
+
+        .price-lowest {
+            color: var(--danger-color);
+        }
+
+        /* ===== CHANGE INDICATORS ===== */
+        .indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .indicator-high {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success-color);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .indicator-low {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger-color);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .indicator-neutral {
+            background: rgba(148, 163, 184, 0.15);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        /* ===== TIMESTAMP DISPLAY ===== */
+        .timestamp {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .header {
+                padding: 20px 15px;
+                margin-bottom: 25px;
+            }
+
+            .data-card {
+                padding: 20px;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 12px 8px;
+            }
+
+            .price {
+                font-size: 1rem;
+            }
+        }
+
+        /* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Focus styles for keyboard navigation */
+        button:focus,
+        a:focus {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header" role="banner">
+            <h1>Competitive Intelligence Dashboard</h1>
+            <p>Technology Sector Stock Analysis</p>
+        </header>
+
+        <!-- Control Buttons -->
+        <div class="controls" role="toolbar" aria-label="Dashboard controls">
+            <button id="refreshBtn" class="btn btn-primary" aria-label="Refresh stock data">
+                <span>🔄</span>
+                <span>Refresh Data</span>
+            </button>
+            <button id="exportBtn" class="btn btn-secondary" aria-label="Export data to CSV">
+                <span>📊</span>
+                <span>Export to CSV</span>
+            </button>
+        </div>
+
+        <!-- Main Data Display -->
+        <main class="data-card" role="main">
+            <!-- Loading State -->
+            <div id="loadingState" class="loading-state" style="display: none;">
+                <div class="spinner" role="status" aria-live="polite"></div>
+                <p class="loading-text">Fetching latest data...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="errorState" class="error-state" style="display: none;">
+                <div class="error-icon" aria-hidden="true">⚠️</div>
+                <p class="error-text">Unable to load data</p>
+                <p class="error-details" id="errorMessage">Please try again later.</p>
+                <button class="btn btn-primary" onclick="loadStockData()">Retry</button>
+            </div>
+
+            <!-- Data Display -->
+            <div id="dataDisplay" style="display: none;">
+                <div class="table-container">
+                    <table role="table" aria-label="Competitor stock prices">
+                        <thead>
+                            <tr>
+                                <th scope="col">Company</th>
+                                <th scope="col">Ticker</th>
+                                <th scope="col">Current Price</th>
+                                <th scope="col">Change Indicator</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stockTableBody">
+                            <!-- Data will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="timestamp" id="timestamp" role="status" aria-live="polite">
+                    <!-- Timestamp will be inserted here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        /**
+         * JAVASCRIPT APPLICATION LOGIC
+         * Handles data fetching, display, and user interactions
+         */
+
+        // Global state
+        let stockData = null;
+
+        /**
+         * Fetches stock data from the serverless API
+         * Implements loading states and error handling
+         */
+        async function loadStockData() {
+            // Show loading state
+            showLoading();
+
+            try {
+                // Fetch data from serverless function
+                const response = await fetch('/api/stocks');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Check if we received valid data
+                if (!data.stocks || data.stocks.length === 0) {
+                    throw new Error('No stock data received from API');
+                }
+
+                // Store data globally and display it
+                stockData = data;
+                displayStockData(data);
+
+            } catch (error) {
+                console.error('Error loading stock data:', error);
+                showError(error.message);
+            }
+        }
+
+        /**
+         * Displays stock data in the table with highlighting
+         * @param {Object} data - Stock data from API
+         */
+        function displayStockData(data) {
+            const tableBody = document.getElementById('stockTableBody');
+            const timestampElement = document.getElementById('timestamp');
+
+            // Find highest and lowest prices for highlighting
+            const prices = data.stocks.map(stock => stock.price);
+            const highestPrice = Math.max(...prices);
+            const lowestPrice = Math.min(...prices);
+
+            // Clear existing table content
+            tableBody.innerHTML = '';
+
+            // Populate table with stock data
+            data.stocks.forEach(stock => {
+                const row = document.createElement('tr');
+
+                // Determine if this is highest or lowest price
+                const isHighest = stock.price === highestPrice;
+                const isLowest = stock.price === lowestPrice;
+                let priceClass = '';
+                let indicatorClass = 'indicator-neutral';
+                let indicatorText = '—';
+                let indicatorIcon = '';
+
+                if (isHighest) {
+                    priceClass = 'price-highest';
+                    indicatorClass = 'indicator-high';
+                    indicatorText = 'Highest';
+                    indicatorIcon = '▲';
+                } else if (isLowest) {
+                    priceClass = 'price-lowest';
+                    indicatorClass = 'indicator-low';
+                    indicatorText = 'Lowest';
+                    indicatorIcon = '▼';
+                }
+
+                row.innerHTML = `
+                    <td class="company-name">${stock.companyName}</td>
+                    <td class="ticker">${stock.ticker}</td>
+                    <td class="price ${priceClass}">$${stock.price.toFixed(2)}</td>
+                    <td>
+                        <span class="indicator ${indicatorClass}">
+                            ${indicatorIcon ? `<span aria-hidden="true">${indicatorIcon}</span>` : ''}
+                            <span>${indicatorText}</span>
+                        </span>
+                    </td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+
+            // Update timestamp
+            const timestamp = new Date(data.timestamp);
+            timestampElement.textContent = `Last updated: ${timestamp.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZoneName: 'short'
+            })}`;
+
+            // Show data display
+            showData();
+        }
+
+        /**
+         * Exports stock data to CSV format
+         * Triggers browser download
+         */
+        function exportToCSV() {
+            if (!stockData || !stockData.stocks) {
+                alert('No data available to export. Please refresh the data first.');
+                return;
+            }
+
+            // Create CSV content
+            const headers = ['Company', 'Ticker', 'Current Price', 'Timestamp'];
+            const rows = stockData.stocks.map(stock => [
+                stock.companyName,
+                stock.ticker,
+                `$${stock.price.toFixed(2)}`,
+                new Date(stockData.timestamp).toLocaleString()
+            ]);
+
+            // Combine headers and rows
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+            ].join('\n');
+
+            // Create blob and download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            // Generate filename with timestamp
+            const filename = `competitor-stocks-${new Date().toISOString().split('T')[0]}.csv`;
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        /**
+         * UI State Management Functions
+         */
+        function showLoading() {
+            document.getElementById('loadingState').style.display = 'block';
+            document.getElementById('errorState').style.display = 'none';
+            document.getElementById('dataDisplay').style.display = 'none';
+            document.getElementById('refreshBtn').disabled = true;
+            document.getElementById('exportBtn').disabled = true;
+        }
+
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message || 'Please try again later.';
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'block';
+            document.getElementById('dataDisplay').style.display = 'none';
+            document.getElementById('refreshBtn').disabled = false;
+            document.getElementById('exportBtn').disabled = false;
+        }
+
+        function showData() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = 'none';
+            document.getElementById('dataDisplay').style.display = 'block';
+            document.getElementById('refreshBtn').disabled = false;
+            document.getElementById('exportBtn').disabled = false;
+        }
+
+        /**
+         * Event Listeners
+         */
+        document.getElementById('refreshBtn').addEventListener('click', loadStockData);
+        document.getElementById('exportBtn').addEventListener('click', exportToCSV);
+
+        /**
+         * Initialize dashboard on page load
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStockData();
+        });
+    </script>
+</body>
+</html>
