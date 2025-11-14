@@ -1004,15 +1004,15 @@
             `;
 
             // Display transcript - use split version if available, otherwise full transcript
-            if (data.transcriptSplit && data.transcriptSplit.length > 0) {
+            if (Array.isArray(data.transcriptSplit) && data.transcriptSplit.length > 0) {
                 contentElement.innerHTML = '';
                 data.transcriptSplit.forEach(section => {
-                    if (section.text && section.text !== '...') {
+                    if (section && section.text && section.text !== '...') {
                         const sectionDiv = document.createElement('div');
                         sectionDiv.className = 'transcript-section';
                         sectionDiv.innerHTML = `
                             <div class="speaker-info">
-                                <span class="speaker-name">${section.speaker}</span>
+                                <span class="speaker-name">${section.speaker || 'Speaker'}</span>
                                 ${section.role ? `<span class="speaker-role">${section.role}</span>` : ''}
                             </div>
                             <p class="speaker-text">${section.text}</p>
@@ -1022,7 +1022,7 @@
                 });
             } else {
                 // Fallback to full transcript
-                contentElement.innerHTML = `<p class="speaker-text">${data.transcript}</p>`;
+                contentElement.innerHTML = `<p class="speaker-text">${data.transcript || 'No transcript available.'}</p>`;
             }
 
             showTranscriptData();
