@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Competitive Intelligence Dashboard - Technology Sector Stock Analysis</title>
+    <title>Competitive Intelligence Dashboard - Technology Sector Analysis</title>
 
     <!-- Meta tags for sharing and SEO -->
-    <meta name="description" content="Real-time competitive intelligence dashboard tracking stock performance of major technology companies including Apple, Microsoft, Google, Meta, and Amazon.">
+    <meta name="description" content="Real-time competitive intelligence dashboard tracking stock performance and earnings transcripts of major technology companies.">
     <meta property="og:title" content="Competitive Intelligence Dashboard">
-    <meta property="og:description" content="Technology Sector Stock Analysis - Real-time tracking of AAPL, MSFT, GOOGL, META, AMZN">
+    <meta property="og:description" content="Technology Sector Analysis - Stock tracking and earnings call transcripts">
     <meta property="og:type" content="website">
 
     <style>
@@ -25,6 +25,7 @@
             --warning-color: #f59e0b;
             --accent-blue: #3b82f6;
             --hover-bg: #2d3351;
+            --tab-active: #3b82f6;
         }
 
         /* ===== GLOBAL STYLES ===== */
@@ -45,7 +46,7 @@
 
         /* ===== CONTAINER & LAYOUT ===== */
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             animation: fadeIn 0.6s ease-in;
         }
@@ -64,7 +65,7 @@
         /* ===== HEADER STYLES ===== */
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             padding: 30px 20px;
             background: var(--secondary-bg);
             border-radius: 12px;
@@ -84,6 +85,49 @@
             font-size: clamp(0.9rem, 2vw, 1.1rem);
             color: var(--text-secondary);
             font-weight: 400;
+        }
+
+        /* ===== TAB NAVIGATION ===== */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            position: relative;
+            bottom: -2px;
+        }
+
+        .tab-button:hover {
+            color: var(--text-primary);
+            background: var(--hover-bg);
+        }
+
+        .tab-button.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+
+        /* ===== TAB CONTENT ===== */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         /* ===== CONTROLS SECTION ===== */
@@ -148,7 +192,6 @@
             border: 1px solid var(--border-color);
             padding: 30px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            animation: fadeIn 0.6s ease-in 0.2s both;
         }
 
         /* ===== LOADING STATE ===== */
@@ -308,6 +351,143 @@
             border-top: 1px solid var(--border-color);
         }
 
+        /* ===== COMPANY SELECTOR ===== */
+        .company-selector {
+            margin-bottom: 30px;
+        }
+
+        .company-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .company-btn {
+            padding: 15px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: 2px solid var(--border-color);
+            background: var(--accent-bg);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        .company-btn:hover {
+            border-color: var(--accent-blue);
+            background: var(--hover-bg);
+            transform: translateY(-2px);
+        }
+
+        .company-btn.selected {
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .company-btn .ticker-label {
+            display: block;
+            font-family: 'Courier New', monospace;
+            color: var(--accent-blue);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        /* ===== TRANSCRIPT DISPLAY ===== */
+        .transcript-header {
+            background: var(--accent-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .transcript-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meta-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .meta-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .transcript-content {
+            background: var(--accent-bg);
+            padding: 25px;
+            border-radius: 8px;
+            max-height: 600px;
+            overflow-y: auto;
+            line-height: 1.8;
+        }
+
+        .transcript-section {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .transcript-section:last-child {
+            border-bottom: none;
+        }
+
+        .speaker-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .speaker-name {
+            font-weight: 700;
+            color: var(--accent-blue);
+            font-size: 1.05rem;
+        }
+
+        .speaker-role {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .speaker-text {
+            color: var(--text-primary);
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        /* Custom scrollbar */
+        .transcript-content::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .transcript-content::-webkit-scrollbar-track {
+            background: var(--secondary-bg);
+            border-radius: 5px;
+        }
+
+        .transcript-content::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 5px;
+        }
+
+        .transcript-content::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-blue);
+        }
+
         /* ===== RESPONSIVE DESIGN ===== */
         @media (max-width: 768px) {
             body {
@@ -316,7 +496,7 @@
 
             .header {
                 padding: 20px 15px;
-                margin-bottom: 25px;
+                margin-bottom: 20px;
             }
 
             .data-card {
@@ -343,6 +523,22 @@
             .price {
                 font-size: 1rem;
             }
+
+            .tabs {
+                overflow-x: auto;
+            }
+
+            .tab-button {
+                flex-shrink: 0;
+            }
+
+            .company-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .transcript-content {
+                max-height: 400px;
+            }
         }
 
         /* ===== ACCESSIBILITY IMPROVEMENTS ===== */
@@ -364,6 +560,18 @@
             outline: 2px solid var(--accent-blue);
             outline-offset: 2px;
         }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -371,80 +579,180 @@
         <!-- Header Section -->
         <header class="header" role="banner">
             <h1>Competitive Intelligence Dashboard</h1>
-            <p>Technology Sector Stock Analysis</p>
+            <p>Technology Sector Analysis</p>
         </header>
 
-        <!-- Control Buttons -->
-        <div class="controls" role="toolbar" aria-label="Dashboard controls">
-            <button id="refreshBtn" class="btn btn-primary" aria-label="Refresh stock data">
-                <span>🔄</span>
-                <span>Refresh Data</span>
+        <!-- Tab Navigation -->
+        <nav class="tabs" role="tablist">
+            <button class="tab-button active" data-tab="stocks" role="tab" aria-selected="true">
+                Stock Prices
             </button>
-            <button id="exportBtn" class="btn btn-secondary" aria-label="Export data to CSV">
-                <span>📊</span>
-                <span>Export to CSV</span>
+            <button class="tab-button" data-tab="transcripts" role="tab" aria-selected="false">
+                Earnings Transcripts
             </button>
+        </nav>
+
+        <!-- Stock Prices Tab -->
+        <div id="stocks-tab" class="tab-content active" role="tabpanel">
+            <!-- Control Buttons -->
+            <div class="controls" role="toolbar" aria-label="Stock data controls">
+                <button id="refreshBtn" class="btn btn-primary" aria-label="Refresh stock data">
+                    <span>🔄</span>
+                    <span>Refresh Data</span>
+                </button>
+                <button id="exportBtn" class="btn btn-secondary" aria-label="Export data to CSV">
+                    <span>📊</span>
+                    <span>Export to CSV</span>
+                </button>
+            </div>
+
+            <!-- Main Data Display -->
+            <main class="data-card" role="main">
+                <!-- Loading State -->
+                <div id="loadingState" class="loading-state" style="display: none;">
+                    <div class="spinner" role="status" aria-live="polite"></div>
+                    <p class="loading-text">Fetching latest data...</p>
+                </div>
+
+                <!-- Error State -->
+                <div id="errorState" class="error-state" style="display: none;">
+                    <div class="error-icon" aria-hidden="true">⚠️</div>
+                    <p class="error-text">Unable to load data</p>
+                    <p class="error-details" id="errorMessage">Please try again later.</p>
+                    <button class="btn btn-primary" onclick="loadStockData()">Retry</button>
+                </div>
+
+                <!-- Data Display -->
+                <div id="dataDisplay" style="display: none;">
+                    <div class="table-container">
+                        <table role="table" aria-label="Competitor stock prices">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Company</th>
+                                    <th scope="col">Ticker</th>
+                                    <th scope="col">Current Price</th>
+                                    <th scope="col">Change Indicator</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stockTableBody">
+                                <!-- Data will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="timestamp" id="timestamp" role="status" aria-live="polite">
+                        <!-- Timestamp will be inserted here -->
+                    </div>
+                </div>
+            </main>
         </div>
 
-        <!-- Main Data Display -->
-        <main class="data-card" role="main">
-            <!-- Loading State -->
-            <div id="loadingState" class="loading-state" style="display: none;">
-                <div class="spinner" role="status" aria-live="polite"></div>
-                <p class="loading-text">Fetching latest data...</p>
-            </div>
-
-            <!-- Error State -->
-            <div id="errorState" class="error-state" style="display: none;">
-                <div class="error-icon" aria-hidden="true">⚠️</div>
-                <p class="error-text">Unable to load data</p>
-                <p class="error-details" id="errorMessage">Please try again later.</p>
-                <button class="btn btn-primary" onclick="loadStockData()">Retry</button>
-            </div>
-
-            <!-- Data Display -->
-            <div id="dataDisplay" style="display: none;">
-                <div class="table-container">
-                    <table role="table" aria-label="Competitor stock prices">
-                        <thead>
-                            <tr>
-                                <th scope="col">Company</th>
-                                <th scope="col">Ticker</th>
-                                <th scope="col">Current Price</th>
-                                <th scope="col">Change Indicator</th>
-                            </tr>
-                        </thead>
-                        <tbody id="stockTableBody">
-                            <!-- Data will be inserted here -->
-                        </tbody>
-                    </table>
-                </div>
-                <div class="timestamp" id="timestamp" role="status" aria-live="polite">
-                    <!-- Timestamp will be inserted here -->
+        <!-- Earnings Transcripts Tab -->
+        <div id="transcripts-tab" class="tab-content" role="tabpanel">
+            <!-- Company Selector -->
+            <div class="company-selector">
+                <h2 style="margin-bottom: 20px; color: var(--text-primary);">Select a Company</h2>
+                <div class="company-buttons" id="companyButtons">
+                    <!-- Company buttons will be inserted here -->
                 </div>
             </div>
-        </main>
+
+            <!-- Transcript Display -->
+            <div class="data-card" id="transcriptCard" style="display: none;">
+                <!-- Loading State -->
+                <div id="transcriptLoading" class="loading-state" style="display: none;">
+                    <div class="spinner" role="status" aria-live="polite"></div>
+                    <p class="loading-text">Loading earnings transcript...</p>
+                </div>
+
+                <!-- Error State -->
+                <div id="transcriptError" class="error-state" style="display: none;">
+                    <div class="error-icon" aria-hidden="true">⚠️</div>
+                    <p class="error-text">Unable to load transcript</p>
+                    <p class="error-details" id="transcriptErrorMessage">Please try again later.</p>
+                </div>
+
+                <!-- Transcript Data -->
+                <div id="transcriptData" style="display: none;">
+                    <div class="transcript-header">
+                        <h2 id="transcriptTitle" style="color: var(--text-primary); margin-bottom: 5px;"></h2>
+                        <div class="transcript-meta" id="transcriptMeta">
+                            <!-- Metadata will be inserted here -->
+                        </div>
+                    </div>
+                    <div class="transcript-content" id="transcriptContent">
+                        <!-- Transcript content will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="data-card empty-state" id="transcriptEmpty">
+                <div class="empty-state-icon">📄</div>
+                <p>Select a company above to view their latest earnings call transcript</p>
+            </div>
+        </div>
     </div>
 
     <script>
         /**
          * JAVASCRIPT APPLICATION LOGIC
-         * Handles data fetching, display, and user interactions
+         * Handles tab switching, data fetching, and display
          */
 
-        // Global state
+        // ===== GLOBAL STATE =====
         let stockData = null;
+        let transcriptData = null;
+        let selectedCompany = null;
+
+        // Company data
+        const COMPANIES = {
+            AAPL: 'Apple Inc.',
+            MSFT: 'Microsoft Corporation',
+            GOOGL: 'Alphabet Inc. (Google)',
+            META: 'Meta Platforms Inc.',
+            AMZN: 'Amazon.com Inc.'
+        };
+
+        // ===== TAB SWITCHING =====
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.getAttribute('data-tab');
+                switchTab(tabId);
+            });
+        });
+
+        function switchTab(tabId) {
+            // Update button states
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+            });
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            document.querySelector(`[data-tab="${tabId}"]`).setAttribute('aria-selected', 'true');
+
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+
+            // Load data if needed
+            if (tabId === 'stocks' && !stockData) {
+                loadStockData();
+            } else if (tabId === 'transcripts') {
+                initializeTranscriptsTab();
+            }
+        }
+
+        // ===== STOCK PRICES TAB =====
 
         /**
          * Fetches stock data from the serverless API
-         * Implements loading states and error handling
          */
         async function loadStockData() {
-            // Show loading state
             showLoading();
 
             try {
-                // Fetch data from serverless function
                 const response = await fetch('/api/stocks');
 
                 if (!response.ok) {
@@ -453,12 +761,10 @@
 
                 const data = await response.json();
 
-                // Check if we received valid data
                 if (!data.stocks || data.stocks.length === 0) {
                     throw new Error('No stock data received from API');
                 }
 
-                // Store data globally and display it
                 stockData = data;
                 displayStockData(data);
 
@@ -469,26 +775,21 @@
         }
 
         /**
-         * Displays stock data in the table with highlighting
-         * @param {Object} data - Stock data from API
+         * Displays stock data in the table
          */
         function displayStockData(data) {
             const tableBody = document.getElementById('stockTableBody');
             const timestampElement = document.getElementById('timestamp');
 
-            // Find highest and lowest prices for highlighting
             const prices = data.stocks.map(stock => stock.price);
             const highestPrice = Math.max(...prices);
             const lowestPrice = Math.min(...prices);
 
-            // Clear existing table content
             tableBody.innerHTML = '';
 
-            // Populate table with stock data
             data.stocks.forEach(stock => {
                 const row = document.createElement('tr');
 
-                // Determine if this is highest or lowest price
                 const isHighest = stock.price === highestPrice;
                 const isLowest = stock.price === lowestPrice;
                 let priceClass = '';
@@ -523,7 +824,6 @@
                 tableBody.appendChild(row);
             });
 
-            // Update timestamp
             const timestamp = new Date(data.timestamp);
             timestampElement.textContent = `Last updated: ${timestamp.toLocaleString('en-US', {
                 year: 'numeric',
@@ -535,13 +835,11 @@
                 timeZoneName: 'short'
             })}`;
 
-            // Show data display
             showData();
         }
 
         /**
-         * Exports stock data to CSV format
-         * Triggers browser download
+         * Exports stock data to CSV
          */
         function exportToCSV() {
             if (!stockData || !stockData.stocks) {
@@ -549,7 +847,6 @@
                 return;
             }
 
-            // Create CSV content
             const headers = ['Company', 'Ticker', 'Current Price', 'Timestamp'];
             const rows = stockData.stocks.map(stock => [
                 stock.companyName,
@@ -558,18 +855,15 @@
                 new Date(stockData.timestamp).toLocaleString()
             ]);
 
-            // Combine headers and rows
             const csvContent = [
                 headers.join(','),
                 ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
             ].join('\n');
 
-            // Create blob and download
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
 
-            // Generate filename with timestamp
             const filename = `competitor-stocks-${new Date().toISOString().split('T')[0]}.csv`;
 
             link.setAttribute('href', url);
@@ -581,7 +875,7 @@
         }
 
         /**
-         * UI State Management Functions
+         * Stock tab UI state management
          */
         function showLoading() {
             document.getElementById('loadingState').style.display = 'block';
@@ -608,15 +902,165 @@
             document.getElementById('exportBtn').disabled = false;
         }
 
+        // ===== EARNINGS TRANSCRIPTS TAB =====
+
         /**
-         * Event Listeners
+         * Initializes the transcripts tab
          */
+        function initializeTranscriptsTab() {
+            const buttonsContainer = document.getElementById('companyButtons');
+            if (buttonsContainer.children.length > 0) return; // Already initialized
+
+            Object.entries(COMPANIES).forEach(([ticker, name]) => {
+                const button = document.createElement('button');
+                button.className = 'company-btn';
+                button.innerHTML = `
+                    <span class="ticker-label">${ticker}</span>
+                    <span>${name}</span>
+                `;
+                button.addEventListener('click', () => selectCompany(ticker));
+                buttonsContainer.appendChild(button);
+            });
+        }
+
+        /**
+         * Handles company selection
+         */
+        function selectCompany(ticker) {
+            selectedCompany = ticker;
+
+            // Update button states
+            document.querySelectorAll('.company-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.closest('.company-btn').classList.add('selected');
+
+            // Load transcript
+            loadTranscript(ticker);
+        }
+
+        /**
+         * Loads earnings transcript for selected company
+         */
+        async function loadTranscript(ticker) {
+            showTranscriptLoading();
+
+            try {
+                const response = await fetch(`/api/transcripts?ticker=${ticker}`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (!result.success || !result.data) {
+                    throw new Error(result.message || 'No transcript data available');
+                }
+
+                transcriptData = result.data;
+                displayTranscript(result.data);
+
+            } catch (error) {
+                console.error('Error loading transcript:', error);
+                showTranscriptError(error.message);
+            }
+        }
+
+        /**
+         * Displays earnings transcript
+         */
+        function displayTranscript(data) {
+            const titleElement = document.getElementById('transcriptTitle');
+            const metaElement = document.getElementById('transcriptMeta');
+            const contentElement = document.getElementById('transcriptContent');
+
+            // Set title
+            titleElement.textContent = `${data.companyName} - Q${data.quarter} ${data.year} Earnings Call`;
+
+            // Set metadata
+            const date = new Date(data.date);
+            metaElement.innerHTML = `
+                <div class="meta-item">
+                    <span class="meta-label">Date</span>
+                    <span class="meta-value">${date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    })}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Quarter</span>
+                    <span class="meta-value">Q${data.quarter} ${data.year}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Timing</span>
+                    <span class="meta-value">${data.earningsTiming.replace('_', ' ').toUpperCase()}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Ticker</span>
+                    <span class="meta-value">${data.ticker}</span>
+                </div>
+            `;
+
+            // Display transcript - use split version if available, otherwise full transcript
+            if (data.transcriptSplit && data.transcriptSplit.length > 0) {
+                contentElement.innerHTML = '';
+                data.transcriptSplit.forEach(section => {
+                    if (section.text && section.text !== '...') {
+                        const sectionDiv = document.createElement('div');
+                        sectionDiv.className = 'transcript-section';
+                        sectionDiv.innerHTML = `
+                            <div class="speaker-info">
+                                <span class="speaker-name">${section.speaker}</span>
+                                ${section.role ? `<span class="speaker-role">${section.role}</span>` : ''}
+                            </div>
+                            <p class="speaker-text">${section.text}</p>
+                        `;
+                        contentElement.appendChild(sectionDiv);
+                    }
+                });
+            } else {
+                // Fallback to full transcript
+                contentElement.innerHTML = `<p class="speaker-text">${data.transcript}</p>`;
+            }
+
+            showTranscriptData();
+        }
+
+        /**
+         * Transcript tab UI state management
+         */
+        function showTranscriptLoading() {
+            document.getElementById('transcriptCard').style.display = 'block';
+            document.getElementById('transcriptEmpty').style.display = 'none';
+            document.getElementById('transcriptLoading').style.display = 'block';
+            document.getElementById('transcriptError').style.display = 'none';
+            document.getElementById('transcriptData').style.display = 'none';
+        }
+
+        function showTranscriptError(message) {
+            document.getElementById('transcriptErrorMessage').textContent = message || 'Please try again later.';
+            document.getElementById('transcriptCard').style.display = 'block';
+            document.getElementById('transcriptEmpty').style.display = 'none';
+            document.getElementById('transcriptLoading').style.display = 'none';
+            document.getElementById('transcriptError').style.display = 'block';
+            document.getElementById('transcriptData').style.display = 'none';
+        }
+
+        function showTranscriptData() {
+            document.getElementById('transcriptCard').style.display = 'block';
+            document.getElementById('transcriptEmpty').style.display = 'none';
+            document.getElementById('transcriptLoading').style.display = 'none';
+            document.getElementById('transcriptError').style.display = 'none';
+            document.getElementById('transcriptData').style.display = 'block';
+        }
+
+        // ===== EVENT LISTENERS =====
         document.getElementById('refreshBtn').addEventListener('click', loadStockData);
         document.getElementById('exportBtn').addEventListener('click', exportToCSV);
 
-        /**
-         * Initialize dashboard on page load
-         */
+        // ===== INITIALIZATION =====
         document.addEventListener('DOMContentLoaded', function() {
             loadStockData();
         });
